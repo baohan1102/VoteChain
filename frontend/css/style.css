@@ -1559,3 +1559,60 @@ button {
         padding: 20px;
     }
 }
+/* QUẢN LÝ NGƯỜI ĐƯỢC PHÉP BỎ PHIẾU */
+.manage-voters-section {
+    margin: 35px 0;
+    padding: 25px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.manage-voters-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+}
+
+.manage-voters-form label {
+    font-weight: 600;
+}
+
+.manage-voters-form input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+.manage-voters-form input:focus {
+    border-color: #6366f1;
+}
+
+.manage-voters-form button {
+    padding: 13px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #4f46e5;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.manage-voters-form button:hover {
+    background: #4338ca;
+}
+
+.manage-voters-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#voterMessage {
+    margin: 5px 0 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}

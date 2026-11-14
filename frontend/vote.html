@@ -58,107 +58,74 @@
 
         <!-- ELECTION INFORMATION CARDS -->
         <section class="vote-info-grid">
-            <div class="vote-info-card">
-                <span>◷</span>
-                <div>
-                    <small>Thời gian kết thúc</small>
-                    <strong id="endDate">20/11/2026</strong>
-                </div>
-            </div>
+    <div class="vote-info-card">
+        <span>◷</span>
+        <div>
+            <small>Thời gian kết thúc</small>
+            <strong id="endDate">Đang tải...</strong>
+        </div>
+    </div>
 
-            <div class="vote-info-card">
-                <span>♙</span>
-                <div>
-                    <small>Số lượng ứng viên</small>
-                    <strong>4 ứng viên</strong>
-                </div>
-            </div>
+    <div class="vote-info-card">
+        <span>♙</span>
+        <div>
+            <small>Số phương án</small>
+            <strong id="candidateCount">Đang tải...</strong>
+        </div>
+    </div>
 
-            <div class="vote-info-card">
-                <span>▣</span>
-                <div>
-                    <small>Tổng số phiếu</small>
-                    <strong id="totalVotes">128 phiếu</strong>
-                </div>
-            </div>
-        </section>
+    <div class="vote-info-card">
+        <span>▣</span>
+        <div>
+            <small>Tổng số phiếu</small>
+            <strong id="totalVotes">Đang tải...</strong>
+        </div>
+    </div>
+</section>
+<!-- QUẢN LÝ NGƯỜI ĐƯỢC PHÉP BỎ PHIẾU -->
+<section class="manage-voters-section" id="manageVotersSection" style="display: none;">
+    <div class="candidate-heading">
+        <div>
+            <span class="section-label">VOTER MANAGEMENT</span>
+            <h2>Quản lý người được phép bỏ phiếu</h2>
+            <p>Chỉ người tạo cuộc bình chọn mới có quyền cấp phép.</p>
+        </div>
+    </div>
 
+    <div class="manage-voters-form">
+        <label for="voterAddress">Địa chỉ ví Ethereum</label>
+
+        <input
+            type="text"
+            id="voterAddress"
+            placeholder="Nhập địa chỉ ví, ví dụ: 0x..."
+        >
+
+        <button type="button" id="addVoterBtn">
+            Cấp quyền bỏ phiếu
+        </button>
+
+        <p id="voterMessage"></p>
+    </div>
+</section>
         <!-- CANDIDATE SELECTION -->
-        <section class="candidate-section">
-            <div class="candidate-heading">
-                <div>
-                    <span class="section-label">YOUR CHOICE</span>
-                    <h2>Lựa chọn ứng viên</h2>
-                    <p>Chọn một ứng viên để tham gia bỏ phiếu.</p>
-                </div>
+      <section class="candidate-section">
+    <div class="candidate-heading">
+        <div>
+            <span class="section-label">YOUR CHOICE</span>
+            <h2>Lựa chọn phương án</h2>
+            <p>Chọn một phương án để tham gia bỏ phiếu.</p>
+        </div>
 
-                <span class="candidate-count">4 ứng viên</span>
-            </div>
+        <span class="candidate-count" id="candidateCountLabel">
+            Đang tải...
+        </span>
+    </div>
 
-            <div class="candidate-grid" id="candidateList">
-
-                <!-- CANDIDATE 1 -->
-                <article class="candidate-card">
-                    <div class="candidate-avatar">BH</div>
-                    <h3>Bảo Hân</h3>
-                    <p class="candidate-position">Khoa Công nghệ thông tin</p>
-                    <p class="candidate-description">
-                        Đề xuất nhiều hoạt động học thuật và kết nối sinh viên.
-                    </p>
-
-                    <button class="select-candidate"
-                        data-candidate="1">
-                        Chọn ứng viên
-                    </button>
-                </article>
-
-                <!-- CANDIDATE 2 -->
-                <article class="candidate-card">
-                    <div class="candidate-avatar avatar-purple">TV</div>
-                    <h3>Tường Vy</h3>
-                    <p class="candidate-position">Khoa Kinh tế</p>
-                    <p class="candidate-description">
-                        Xây dựng môi trường sinh viên năng động và sáng tạo.
-                    </p>
-
-                    <button class="select-candidate"
-                        data-candidate="2">
-                        Chọn ứng viên
-                    </button>
-                </article>
-
-                <!-- CANDIDATE 3 -->
-                <article class="candidate-card">
-                    <div class="candidate-avatar avatar-green">PP</div>
-                    <h3>PondPhuwin</h3>
-                    <p class="candidate-position">Khoa Ngoại ngữ</p>
-                    <p class="candidate-description">
-                        Thúc đẩy giao lưu, hợp tác và các chương trình tình nguyện.
-                    </p>
-
-                    <button class="select-candidate"
-                        data-candidate="3">
-                        Chọn ứng viên
-                    </button>
-                </article>
-
-                <!-- CANDIDATE 4 -->
-                <article class="candidate-card">
-                    <div class="candidate-avatar avatar-orange">BP</div>
-                    <h3>BounPrem</h3>
-                    <p class="candidate-position">Khoa Kỹ thuật</p>
-                    <p class="candidate-description">
-                        Tăng cường hoạt động nghiên cứu và phát triển kỹ năng.
-                    </p>
-
-                    <button class="select-candidate"
-                        data-candidate="4">
-                        Chọn ứng viên
-                    </button>
-                </article>
-
-            </div>
-        </section>
+    <div class="candidate-grid" id="candidateList">
+        <p>Đang tải phương án từ Blockchain...</p>
+    </div>
+</section>
 
         <!-- VOTING CONFIRMATION -->
         <section class="voting-panel">
@@ -175,18 +142,17 @@
             </button>
         </section>
 
-        <!-- BLOCKCHAIN NOTICE -->
-        <section class="blockchain-notice">
-            <span>🔒</span>
-            <div>
-                <strong>Bỏ phiếu trên Blockchain</strong>
-                <p>
-                    Khi tích hợp Smart Contract, giao dịch bỏ phiếu
-                    sẽ được gửi qua ví MetaMask và ghi nhận trên Blockchain.
-                    Mỗi địa chỉ ví chỉ được bỏ phiếu một lần cho mỗi cuộc bầu cử.
-                </p>
-            </div>
-        </section>
+       <section class="blockchain-notice">
+    <span>🔒</span>
+    <div>
+        <strong>Bỏ phiếu trên Blockchain</strong>
+        <p>
+            Phiếu bầu sẽ được gửi qua MetaMask và ghi nhận
+            trực tiếp trên mạng Sepolia. Mỗi địa chỉ ví chỉ
+            được bỏ phiếu một lần cho mỗi cuộc bình chọn.
+        </p>
+    </div>
+</section>
 
     </main>
 
@@ -199,8 +165,11 @@
 
     <div id="voteToast" class="vote-toast"></div>
 
-    <script src="js/wallet.js"></script>
-    <script src="js/vote.js"></script>
+<<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 
+<script src="/js/contract.js"></script>
+<script src="js/wallet.js"></script>
+<script src="js/vote.js"></script>
+<script src="js/manage-voters.js"></script>
 </body>
 </html>

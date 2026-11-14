@@ -1,51 +1,10 @@
 
 // ===================================
 // VOTECHAIN - ELECTIONS PAGE
-// Demo data - chưa kết nối Blockchain
+// Đã kết nối Smart Contract
 // ===================================
 
-const elections = [
-    {
-        id: 1,
-        title: "Bầu chọn Chủ tịch Hội sinh viên",
-        category: "Giáo dục",
-        description: "Cuộc bầu chọn đại diện sinh viên nhiệm kỳ mới.",
-        status: "active",
-        votes: 128,
-        candidates: 4,
-        endDate: "20/11/2026"
-    },
-    {
-        id: 2,
-        title: "Bình chọn dự án sáng tạo năm 2026",
-        category: "Công nghệ",
-        description: "Bình chọn dự án công nghệ được yêu thích nhất.",
-        status: "active",
-        votes: 86,
-        candidates: 5,
-        endDate: "18/11/2026"
-    },
-    {
-        id: 3,
-        title: "Lựa chọn trưởng nhóm nghiên cứu",
-        category: "Nghiên cứu",
-        description: "Cuộc bầu chọn trưởng nhóm nghiên cứu khoa học.",
-        status: "upcoming",
-        votes: 0,
-        candidates: 3,
-        endDate: "25/11/2026"
-    },
-    {
-        id: 4,
-        title: "Bình chọn ý tưởng khởi nghiệp",
-        category: "Khởi nghiệp",
-        description: "Tìm kiếm ý tưởng khởi nghiệp nổi bật của sinh viên.",
-        status: "ended",
-        votes: 215,
-        candidates: 6,
-        endDate: "10/11/2026"
-    }
-];
+let elections = [];
 
 const statusInfo = {
     active: {
@@ -65,7 +24,126 @@ const statusInfo = {
     }
 };
 
-// Render danh sách cuộc bầu cử
+// Chuyển đổi dữ liệu thành chuỗi an toàn khi hiển thị HTML
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
+}
+
+// Định dạng thời gian
+function formatDate(timestamp) {
+    return new Date(Number(timestamp) * 1000)
+        .toLocaleDateString("vi-VN");
+}
+
+// Xác định trạng thái cuộc bình chọn
+function getElectionStatus(startTime, endTime) {
+    const now = Math.floor(Date.now() / 1000);
+
+    if (now < Number(startTime)) {
+        return "upcoming";
+    }
+
+    if (now <= Number(endTime)) {
+        return "active";
+    }
+
+    return "ended";
+}
+
+// ===================================
+// LẤY DỮ LIỆU TỪ SMART CONTRACT
+// ===================================
+
+async function loadElectionsFromBlockchain() {
+    const list = document.getElementById("electionList");
+
+    try {
+        if (!window.VoteChain) {
+            throw new Error("Không tìm thấy thư viện VoteChain.");
+        }
+
+        if (list) {
+            list.innerHTML = "<p>Đang tải dữ liệu Blockchain...</p>";
+        }
+
+        // Kết nối Smart Contract ở chế độ đọc
+        const contract = await window.VoteChain.getReadContract();
+
+        // Lấy tổng số cuộc bình chọn
+        const pollCount = await contract.pollCount();
+
+        elections = [];
+
+        // Đọc từng cuộc bình chọn
+        for (let i = 1n; i <= pollCount; i++) {
+
+            const poll = await contract.polls(i);
+
+            // Lấy phương án và số phiếu
+            const result = await contract.getResults(i);
+
+            const options = result[0];
+            const voteCounts = result[1];
+
+            const election = {
+                id: i.toString(),
+                title: poll.title,
+                description: poll.description,
+                category: "Blockchain",
+                status: getElectionStatus(
+                    poll.startTime,
+                    poll.endTime
+                ),
+                votes: poll.totalVotes.toString(),
+                candidates: options.length,
+                options: Array.from(options),
+                voteCounts: Array.from(voteCounts).map(
+                    count => count.toString()
+                ),
+                startTime: poll.startTime.toString(),
+                endTime: poll.endTime.toString(),
+                creator: poll.creator,
+                endDate: formatDate(poll.endTime)
+            };
+
+            elections.push(election);
+        }
+
+        console.log("Đã tải danh sách từ Blockchain:", elections);
+
+        updateStatistics();
+        filterElections();
+
+    } catch (error) {
+        console.error("Lỗi tải cuộc bình chọn:", error);
+
+        if (list) {
+            list.innerHTML = `
+                <p class="error-message">
+                    Không thể tải dữ liệu từ Blockchain.
+                    <br>
+                    ${escapeHTML(error.message)}
+                </p>
+            `;
+        }
+
+        const noElection = document.getElementById("noElection");
+        if (noElection) {
+            noElection.style.display = "none";
+        }
+    }
+}
+
+// ===================================
+// HIỂN THỊ DANH SÁCH
+// ===================================
+
 function renderElections(data) {
     const list = document.getElementById("electionList");
     const noElection = document.getElementById("noElection");
@@ -88,13 +166,15 @@ function renderElections(data) {
 
         if (election.status === "active") {
             buttonHTML = `
-                <a href="vote.html?id=${election.id}" class="vote-button">
+                <a href="vote.html?id=${encodeURIComponent(election.id)}"
+                   class="vote-button">
                     ${status.button} →
                 </a>
             `;
         } else if (election.status === "ended") {
             buttonHTML = `
-                <a href="results.html?id=${election.id}" class="vote-button">
+                <a href="results.html?id=${encodeURIComponent(election.id)}"
+                   class="vote-button">
                     ${status.button} →
                 </a>
             `;
@@ -108,9 +188,10 @@ function renderElections(data) {
 
         list.innerHTML += `
             <article class="election-card">
+
                 <div class="card-top">
                     <span class="card-category">
-                        ${election.category}
+                        ${escapeHTML(election.category)}
                     </span>
 
                     <span class="status-badge ${status.className}">
@@ -118,56 +199,75 @@ function renderElections(data) {
                     </span>
                 </div>
 
-                <h3>${election.title}</h3>
+                <h3>${escapeHTML(election.title)}</h3>
 
-                <p>${election.description}</p>
+                <p>${escapeHTML(election.description)}</p>
 
                 <div class="card-info">
                     <div>
                         Số phiếu
-                        <strong>${election.votes}</strong>
+                        <strong>${escapeHTML(election.votes)}</strong>
                     </div>
 
                     <div>
-                        Ứng viên
+                        Phương án
                         <strong>${election.candidates}</strong>
                     </div>
 
                     <div>
                         Kết thúc
-                        <strong>${election.endDate}</strong>
+                        <strong>${escapeHTML(election.endDate)}</strong>
                     </div>
                 </div>
 
                 ${buttonHTML}
+
             </article>
         `;
     });
 }
 
-// Cập nhật thống kê
+// ===================================
+// CẬP NHẬT THỐNG KÊ
+// ===================================
+
 function updateStatistics() {
-    document.getElementById("totalElections").textContent =
-        elections.length;
+    const total = document.getElementById("totalElections");
+    const active = document.getElementById("activeElections");
+    const ended = document.getElementById("endedElections");
 
-    document.getElementById("activeElections").textContent =
-        elections.filter(item => item.status === "active").length;
+    if (total) {
+        total.textContent = elections.length;
+    }
 
-    document.getElementById("endedElections").textContent =
-        elections.filter(item => item.status === "ended").length;
+    if (active) {
+        active.textContent = elections.filter(
+            item => item.status === "active"
+        ).length;
+    }
+
+    if (ended) {
+        ended.textContent = elections.filter(
+            item => item.status === "ended"
+        ).length;
+    }
 }
 
-// Tìm kiếm và lọc
-function filterElections() {
-    const keyword = document
-        .getElementById("searchElection")
-        .value.toLowerCase()
-        .trim();
+// ===================================
+// TÌM KIẾM VÀ LỌC
+// ===================================
 
-    const selectedStatus =
-        document.getElementById("statusFilter").value;
+function filterElections() {
+    const searchInput = document.getElementById("searchElection");
+    const statusFilter = document.getElementById("statusFilter");
+
+    if (!searchInput || !statusFilter) return;
+
+    const keyword = searchInput.value.toLowerCase().trim();
+    const selectedStatus = statusFilter.value;
 
     const filtered = elections.filter(item => {
+
         const matchesKeyword =
             item.title.toLowerCase().includes(keyword) ||
             item.category.toLowerCase().includes(keyword) ||
@@ -183,16 +283,22 @@ function filterElections() {
     renderElections(filtered);
 }
 
-// Khởi chạy trang
+// ===================================
+// KHỞI CHẠY TRANG
+// ===================================
+
 document.addEventListener("DOMContentLoaded", function () {
-    updateStatistics();
-    renderElections(elections);
 
-    document
-        .getElementById("searchElection")
-        .addEventListener("input", filterElections);
+    const searchInput = document.getElementById("searchElection");
+    const statusFilter = document.getElementById("statusFilter");
 
-    document
-        .getElementById("statusFilter")
-        .addEventListener("change", filterElections);
+    if (searchInput) {
+        searchInput.addEventListener("input", filterElections);
+    }
+
+    if (statusFilter) {
+        statusFilter.addEventListener("change", filterElections);
+    }
+
+    loadElectionsFromBlockchain();
 });

@@ -1,7 +1,7 @@
 
 // =========================================
 // VOTECHAIN - CREATE ELECTION PAGE
-// Frontend demo - chua ket noi Smart Contract
+// Connected to Smart Contract
 // =========================================
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 String(index + 1).padStart(2, "0");
 
             const removeBtn = row.querySelector(".remove-option");
-
             removeBtn.disabled = count <= 2;
         });
     }
@@ -131,15 +130,22 @@ document.addEventListener("DOMContentLoaded", function () {
             "Mô tả cuộc bình chọn sẽ xuất hiện ở đây.";
     });
 
-    // Gioi han thoi gian bat dau va ket thuc
+    // Gioi han thoi gian
     startTimeInput.addEventListener("change", function () {
         endTimeInput.min = startTimeInput.value;
     });
 
-    // Kiem tra bieu mau
-    form.addEventListener("submit", function (event) {
+    // =========================================
+    // TAO CUOC BINH CHON TREN BLOCKCHAIN
+    // =========================================
+
+    form.addEventListener("submit", async function (event) {
 
         event.preventDefault();
+
+        if (submitBtn.disabled) {
+            return;
+        }
 
         const title = titleInput.value.trim();
         const description = descriptionInput.value.trim();
@@ -171,6 +177,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        if (options.length > 10) {
+            showCreateToast("Chỉ được tạo tối đa 10 lựa chọn!");
+            return;
+        }
+
         // Kiem tra lua chon trong
         if (options.some(option => option.length === 0)) {
             showCreateToast("Vui lòng nhập đầy đủ các lựa chọn!");
@@ -196,7 +207,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const startTimestamp = new Date(startTime).getTime();
         const endTimestamp = new Date(endTime).getTime();
 
-        if (Number.isNaN(startTimestamp) || Number.isNaN(endTimestamp)) {
+        if (
+            Number.isNaN(startTimestamp) ||
+            Number.isNaN(endTimestamp)
+        ) {
             showCreateToast("Thời gian không hợp lệ!");
             return;
         }
@@ -211,25 +225,133 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Du lieu chuan bi gui len Smart Contract
+        // Chuyen sang Unix timestamp (giay)
+        const startUnix = Math.floor(startTimestamp / 1000);
+        const endUnix = Math.floor(endTimestamp / 1000);
+
         const pollData = {
             title: title,
             description: description,
             options: options,
-            startTime: Math.floor(startTimestamp / 1000),
-            endTime: Math.floor(endTimestamp / 1000)
+            startTime: startUnix,
+            endTime: endUnix
         };
 
         console.log("Du lieu cuoc binh chon:", pollData);
 
-        // Hien tai chua gui giao dich Blockchain
-        showCreateToast(
-            "Thông tin hợp lệ! Chờ tích hợp Smart Contract để tạo cuộc bình chọn."
-        );
+        // Bat dau gui giao dich
+        try {
 
-        console.log(
-            "Chua gui giao dich. Day la du lieu frontend demo."
-        );
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Đang kết nối ví...";
+
+            // Lay Smart Contract co quyen ghi
+            if (!window.VoteChain) {
+                throw new Error(
+                    "Không tìm thấy VoteChain. Vui lòng kiểm tra contract.js."
+                );
+            }
+
+            const contract = await window.VoteChain.getWriteContract();
+
+            submitBtn.textContent = "Vui lòng xác nhận trên MetaMask...";
+
+            // Goi ham createPoll tren Smart Contract
+            const transaction = await contract.createPoll(
+                title,
+                description,
+                options,
+                startUnix,
+                endUnix
+            );
+
+            console.log("Transaction:", transaction.hash);
+
+            showCreateToast("Đã gửi giao dịch! Đang chờ Blockchain xác nhận...");
+
+            submitBtn.textContent = "Đang xác nhận giao dịch...";
+
+            // Cho giao dich duoc xac nhan
+            const receipt = await transaction.wait();
+
+            console.log("Giao dịch đã xác nhận:", receipt);
+
+            // Doc lai tong so cuoc binh chon
+            const readContract = await window.VoteChain.getReadContract();
+
+            const totalPolls = await readContract.pollCount();
+
+            console.log("Tổng số cuộc bình chọn:", totalPolls.toString());
+
+            // Tim ID vua tao tu event PollCreated
+            let createdPollId = null;
+
+            for (const log of receipt.logs) {
+                try {
+                    const parsedLog = contract.interface.parseLog(log);
+
+                    if (parsedLog && parsedLog.name === "PollCreated") {
+                        createdPollId = parsedLog.args.pollId.toString();
+                        break;
+                    }
+                } catch (error) {
+                    // Bo qua log khong thuoc contract
+                }
+            }
+
+            console.log("ID cuộc bình chọn vừa tạo:", createdPollId);
+
+            showCreateToast(
+                "Tạo cuộc bình chọn thành công trên Blockchain!"
+            );
+
+            // Cap nhat trang thai nut
+            submitBtn.textContent = "Đã tạo thành công";
+
+            // Chuyen sang trang danh sach sau 2 giay
+            setTimeout(function () {
+                window.location.href = "elections.html";
+            }, 2000);
+
+        } catch (error) {
+
+            console.error("Lỗi tạo cuộc bình chọn:", error);
+
+            let message = "Không thể tạo cuộc bình chọn. Vui lòng thử lại.";
+
+            if (error.code === 4001 ||
+                error.code === "ACTION_REJECTED") {
+                message = "Bạn đã từ chối giao dịch trên MetaMask.";
+            }
+            else if (error.message &&
+                error.message.includes("Title cannot be empty")) {
+                message = "Tên cuộc bình chọn không được để trống.";
+            }
+            else if (error.message &&
+                error.message.includes("At least 2 options required")) {
+                message = "Cần ít nhất 2 lựa chọn.";
+            }
+            else if (error.message &&
+                error.message.includes("Invalid time range")) {
+                message = "Khoảng thời gian bình chọn không hợp lệ.";
+            }
+            else if (error.message &&
+                error.message.includes("End time must be future")) {
+                message = "Thời gian kết thúc phải ở tương lai.";
+            }
+            else if (error.message &&
+                error.message.includes("insufficient funds")) {
+                message = "Ví không đủ SepoliaETH để trả phí giao dịch.";
+            }
+            else if (error.reason) {
+                message = "Giao dịch thất bại: " + error.reason;
+            }
+
+            showCreateToast(message);
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Tạo cuộc bình chọn <span>→</span>';
+        }
     });
 
     // Khoi tao

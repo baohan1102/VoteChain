@@ -1,70 +1,7 @@
-// ======================================
-// VOTECHAIN - RESULTS PAGE
-// Demo data - chưa kết nối Smart Contract
-// ======================================
-
-// Dữ liệu mẫu theo ID cuộc bầu cử
-const demoResults = {
-    1: {
-        title: "Bầu chọn Chủ tịch Hội sinh viên",
-        description: "Cuộc bình chọn lựa chọn Chủ tịch Hội sinh viên nhiệm kỳ mới.",
-        status: "active",
-        endDate: "20/11/2026",
-        creator: "0x338d...5f3e",
-        options: [
-            { name: "Bảo Hân", votes: 58 },
-            { name: "Tường Vy", votes: 35 },
-            { name: "PondPhuwin", votes: 22 },
-            { name: "BounPrem", votes: 13 }
-        ]
-    },
-
-    2: {
-        title: "Bình chọn dự án sáng tạo năm 2026",
-        description: "Bình chọn dự án sáng tạo được yêu thích nhất năm 2026.",
-        status: "active",
-        endDate: "18/11/2026",
-        creator: "0x338d...5f3e",
-        options: [
-            { name: "Dự án AI hỗ trợ học tập", votes: 30 },
-            { name: "Dự án Smart Campus", votes: 25 },
-            { name: "Dự án Green University", votes: 18 },
-            { name: "Dự án EduConnect", votes: 13 }
-        ]
-    },
-
-    3: {
-        title: "Lựa chọn trưởng nhóm nghiên cứu",
-        description: "Cuộc bình chọn trưởng nhóm nghiên cứu của sinh viên.",
-        status: "upcoming",
-        endDate: "25/11/2026",
-        creator: "0x338d...5f3e",
-        options: [
-            { name: "Nguyễn Minh Anh", votes: 0 },
-            { name: "Trần Hoàng Nam", votes: 0 },
-            { name: "Phạm Gia Linh", votes: 0 }
-        ]
-    },
-
-    4: {
-        title: "Bình chọn ý tưởng khởi nghiệp",
-        description: "Lựa chọn ý tưởng khởi nghiệp được yêu thích nhất.",
-        status: "ended",
-        endDate: "10/11/2026",
-        creator: "0x338d...5f3e",
-        options: [
-            { name: "Ứng dụng kết nối sinh viên", votes: 90 },
-            { name: "Nền tảng mua bán đồ cũ", votes: 65 },
-            { name: "Dịch vụ giao hàng nội khu", votes: 40 },
-            { name: "Ứng dụng quản lý chi tiêu", votes: 20 }
-        ]
-    }
-};
-
 
 // ======================================
 // VOTECHAIN - RESULTS PAGE
-// LIST + RESULT DETAIL
+// Kết nối Smart Contract - Sepolia
 // ======================================
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -75,15 +12,17 @@ const resultsElectionList = document.getElementById("resultsElectionList");
 const noResultsElection = document.getElementById("noResultsElection");
 const resultDetailPage = document.getElementById("resultDetailPage");
 
+let allElections = [];
 
-// Rút gọn địa chỉ
+// ======================================
+// 1. HÀM HỖ TRỢ
+// ======================================
+
 function shortenResultAddress(address) {
     if (!address || address.length < 12) return address || "--";
     return address.slice(0, 6) + "..." + address.slice(-4);
 }
 
-
-// Tính tổng phiếu
 function getTotalVotes(election) {
     return election.options.reduce(
         (sum, option) => sum + Number(option.votes),
@@ -91,8 +30,15 @@ function getTotalVotes(election) {
     );
 }
 
+function getStatus(timestampStart, timestampEnd) {
+    const now = Math.floor(Date.now() / 1000);
 
-// Trạng thái cuộc bầu cử
+    if (now < Number(timestampStart)) return "upcoming";
+    if (now > Number(timestampEnd)) return "ended";
+
+    return "active";
+}
+
 function getStatusText(status) {
     const statuses = {
         active: "Đang diễn ra",
@@ -103,30 +49,109 @@ function getStatusText(status) {
     return statuses[status] || "Không xác định";
 }
 
+function formatDate(timestamp) {
+    return new Date(Number(timestamp) * 1000).toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
 
 // ======================================
-// 1. HIỂN THỊ DANH SÁCH KẾT QUẢ
+// 2. LẤY DỮ LIỆU TỪ BLOCKCHAIN
+// ======================================
+
+async function loadElectionsFromBlockchain() {
+    try {
+        const contract = await window.VoteChain.getReadContract();
+
+        const pollCount = Number(await contract.pollCount());
+
+        allElections = [];
+
+        for (let i = 1; i <= pollCount; i++) {
+            const poll = await contract.polls(i);
+            const result = await contract.getResults(i);
+
+            const options = [];
+
+            for (let j = 0; j < result[0].length; j++) {
+                options.push({
+                    name: result[0][j],
+                    votes: Number(result[1][j])
+                });
+            }
+
+            const election = {
+                id: i,
+                title: poll[0],
+                description: poll[1],
+                startTime: Number(poll[2]),
+                endTime: Number(poll[3]),
+                creator: poll[4],
+                totalVotes: Number(poll[5]),
+                status: getStatus(poll[2], poll[3]),
+                endDate: formatDate(poll[3]),
+                options: options
+            };
+
+            allElections.push(election);
+        }
+
+        console.log("Đã tải dữ liệu kết quả từ Blockchain:", allElections);
+        const dataSource = document.getElementById("dataSource");
+
+if (dataSource) {
+    dataSource.textContent = "Nguồn dữ liệu: Blockchain Sepolia";
+}
+
+        return allElections;
+
+    } catch (error) {
+        console.error("Lỗi tải kết quả Blockchain:", error);
+        throw error;
+    }
+}
+
+// ======================================
+// 3. HIỂN THỊ DANH SÁCH KẾT QUẢ
 // ======================================
 
 function renderResultsList() {
+    if (!resultsListSection || !resultsElectionList) return;
+
     resultsListSection.hidden = false;
-    resultDetailPage.hidden = true;
+
+    if (resultDetailPage) {
+        resultDetailPage.hidden = true;
+    }
 
     resultsElectionList.innerHTML = "";
 
-    // Chỉ lấy các cuộc bầu cử đã có ít nhất 1 phiếu
-    const electionsWithResults = Object.entries(demoResults)
-        .filter(([id, election]) => getTotalVotes(election) > 0)
-        .sort((a, b) => Number(b[0]) - Number(a[0]));
+    // Chỉ hiển thị cuộc bình chọn đã có phiếu
+    const electionsWithResults = allElections
+        .filter(election => getTotalVotes(election) > 0)
+        .sort((a, b) => b.id - a.id);
 
     if (electionsWithResults.length === 0) {
-        noResultsElection.hidden = false;
+        if (noResultsElection) {
+            noResultsElection.hidden = false;
+        }
         return;
     }
 
-    noResultsElection.hidden = true;
+    if (noResultsElection) {
+        noResultsElection.hidden = true;
+    }
 
-    electionsWithResults.forEach(([id, election]) => {
+    electionsWithResults.forEach(election => {
         const totalVotes = getTotalVotes(election);
 
         const leadingOption = [...election.options].sort(
@@ -173,7 +198,9 @@ function renderResultsList() {
             <span>Lựa chọn dẫn đầu</span>
             <strong></strong>
         `;
-        leading.querySelector("strong").textContent = leadingOption.name;
+
+        leading.querySelector("strong").textContent =
+            leadingOption ? leadingOption.name : "--";
 
         statistics.appendChild(votes);
         statistics.appendChild(options);
@@ -181,7 +208,7 @@ function renderResultsList() {
 
         const viewButton = document.createElement("a");
         viewButton.className = "view-result-btn";
-        viewButton.href = `results.html?id=${encodeURIComponent(id)}`;
+        viewButton.href = `results.html?id=${election.id}`;
         viewButton.textContent = "Xem kết quả →";
 
         card.appendChild(information);
@@ -192,48 +219,42 @@ function renderResultsList() {
     });
 }
 
-
 // ======================================
-// 2. HIỂN THỊ THÔNG TIN CHI TIẾT
+// 4. HIỂN THỊ THÔNG TIN CUỘC BÌNH CHỌN
 // ======================================
 
 function renderElectionInfo(election) {
-    document.getElementById("electionTitle").textContent = election.title;
+    setText("electionTitle", election.title);
+    setText("electionDescription", election.description);
+    setText("electionEndDate", election.endDate);
 
-    document.getElementById("electionDescription").textContent =
-        election.description;
+    setText(
+        "electionCreator",
+        shortenResultAddress(election.creator)
+    );
 
-    document.getElementById("electionEndDate").textContent =
-        election.endDate;
-
-    document.getElementById("electionCreator").textContent =
-        shortenResultAddress(election.creator);
-
-    document.getElementById("electionId").textContent =
-        "Mã cuộc bầu cử: #" + electionId;
+    setText("electionId", "Mã cuộc bầu cử: #" + election.id);
 
     const status = document.getElementById("resultStatus");
 
-    status.textContent = getStatusText(election.status);
-    status.className = "result-status " + election.status;
+    if (status) {
+        status.textContent = getStatusText(election.status);
+        status.className = "result-status " + election.status;
+    }
 }
 
-
 // ======================================
-// 3. THỐNG KÊ
+// 5. THỐNG KÊ KẾT QUẢ
 // ======================================
 
 function renderStatistics(election) {
     const totalVotes = getTotalVotes(election);
 
-    document.getElementById("totalVotes").textContent =
-        totalVotes.toLocaleString("vi-VN");
-
-    document.getElementById("totalOptions").textContent =
-        election.options.length;
+    setText("totalVotes", totalVotes.toLocaleString("vi-VN"));
+    setText("totalOptions", election.options.length);
 
     if (totalVotes === 0) {
-        document.getElementById("leadingOption").textContent = "--";
+        setText("leadingOption", "--");
         return;
     }
 
@@ -241,13 +262,11 @@ function renderStatistics(election) {
         (a, b) => b.votes - a.votes
     )[0];
 
-    document.getElementById("leadingOption").textContent =
-        leading.name;
+    setText("leadingOption", leading.name);
 }
 
-
 // ======================================
-// 4. BIỂU ĐỒ VÀ CHI TIẾT PHIẾU
+// 6. BIỂU ĐỒ VÀ CHI TIẾT PHIẾU
 // ======================================
 
 function renderChart(election) {
@@ -255,13 +274,18 @@ function renderChart(election) {
     const resultDetailList = document.getElementById("resultDetailList");
     const emptyResults = document.getElementById("emptyResults");
 
+    if (!chartContainer || !resultDetailList) return;
+
     chartContainer.innerHTML = "";
     resultDetailList.innerHTML = "";
 
     const totalVotes = getTotalVotes(election);
 
     chartContainer.hidden = totalVotes === 0;
-    emptyResults.hidden = totalVotes !== 0;
+
+    if (emptyResults) {
+        emptyResults.hidden = totalVotes !== 0;
+    }
 
     election.options.forEach((option, index) => {
         const percentage = totalVotes > 0
@@ -303,7 +327,6 @@ function renderChart(election) {
 
         chartContainer.appendChild(chartItem);
 
-
         // Chi tiết kết quả
         const detailItem = document.createElement("div");
         detailItem.className = "detail-item";
@@ -341,28 +364,45 @@ function renderChart(election) {
     });
 }
 
-
 // ======================================
-// 5. TẢI TRANG CHI TIẾT
+// 7. HIỂN THỊ TRANG CHI TIẾT
 // ======================================
 
 function loadResultDetail() {
-    resultsListSection.hidden = true;
-    resultDetailPage.hidden = false;
+    if (resultsListSection) {
+        resultsListSection.hidden = true;
+    }
 
-    const election = demoResults[electionId];
+    if (resultDetailPage) {
+        resultDetailPage.hidden = false;
+    }
+
+    const election = allElections.find(
+        item => item.id === Number(electionId)
+    );
 
     if (!election) {
-        resultDetailPage.hidden = true;
-        resultsListSection.hidden = false;
+        if (resultDetailPage) {
+            resultDetailPage.hidden = true;
+        }
 
-        resultsElectionList.innerHTML = "";
+        if (resultsListSection) {
+            resultsListSection.hidden = false;
+        }
 
-        const message = document.createElement("p");
-        message.textContent = "Không tìm thấy cuộc bầu cử này.";
-        resultsElectionList.appendChild(message);
+        if (resultsElectionList) {
+            resultsElectionList.innerHTML = "";
 
-        noResultsElection.hidden = true;
+            const message = document.createElement("p");
+            message.textContent = "Không tìm thấy cuộc bầu cử này.";
+
+            resultsElectionList.appendChild(message);
+        }
+
+        if (noResultsElection) {
+            noResultsElection.hidden = true;
+        }
+
         return;
     }
 
@@ -371,32 +411,83 @@ function loadResultDetail() {
     renderChart(election);
 }
 
-
 // ======================================
-// 6. LÀM MỚI
+// 8. TẢI LẠI DỮ LIỆU
 // ======================================
 
-document.getElementById("refreshResults").addEventListener("click", function () {
-    if (electionId) {
-        loadResultDetail();
-    } else {
-        renderResultsList();
+async function refreshResults() {
+    const refreshButton = document.getElementById("refreshResults");
+
+    try {
+        if (refreshButton) {
+            refreshButton.disabled = true;
+        }
+
+        await loadElectionsFromBlockchain();
+
+        if (electionId) {
+            loadResultDetail();
+        } else {
+            renderResultsList();
+        }
+
+    } catch (error) {
+        console.error("Không thể làm mới kết quả:", error);
+        alert(
+            "Không thể tải dữ liệu từ Blockchain. " +
+            "Hãy kiểm tra MetaMask và mạng Sepolia."
+        );
+    } finally {
+        if (refreshButton) {
+            refreshButton.disabled = false;
+        }
     }
-});
-
+}
 
 // ======================================
-// 7. KHỞI TẠO
+// 9. SỰ KIỆN LÀM MỚI
 // ======================================
 
-document.addEventListener("DOMContentLoaded", function () {
-    if (electionId) {
-        loadResultDetail();
-    } else {
-        renderResultsList();
-    }
+const refreshButton = document.getElementById("refreshResults");
 
-    if (typeof checkWalletConnection === "function") {
-        checkWalletConnection();
+if (refreshButton) {
+    refreshButton.addEventListener("click", refreshResults);
+}
+
+// ======================================
+// 10. KHỞI TẠO TRANG
+// ======================================
+
+document.addEventListener("DOMContentLoaded", async function () {
+    try {
+        await loadElectionsFromBlockchain();
+
+        if (electionId) {
+            loadResultDetail();
+        } else {
+            renderResultsList();
+        }
+
+        if (typeof checkWalletConnection === "function") {
+            checkWalletConnection();
+        }
+
+    } catch (error) {
+        console.error("Lỗi khởi tạo trang kết quả:", error);
+
+        if (resultsElectionList) {
+            resultsElectionList.innerHTML = "";
+
+            const message = document.createElement("p");
+            message.textContent =
+                "Không thể tải kết quả từ Blockchain. " +
+                "Vui lòng kiểm tra MetaMask và mạng Sepolia.";
+
+            resultsElectionList.appendChild(message);
+        }
+
+        if (noResultsElection) {
+            noResultsElection.hidden = true;
+        }
     }
 });

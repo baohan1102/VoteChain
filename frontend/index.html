@@ -13,14 +13,13 @@
     <!-- HEADER -->
     <header class="header">
         <div class="container navbar">
-          
-<a href="index.html" class="vc-brand">
-    <span class="vc-brand-icon">V</span>
-    <span class="vc-brand-name">
-        Vote<span>Chain</span>
-    </span>
-</a>
 
+            <a href="index.html" class="vc-brand">
+                <span class="vc-brand-icon">V</span>
+                <span class="vc-brand-name">
+                    Vote<span>Chain</span>
+                </span>
+            </a>
 
             <nav class="nav-links">
                 <a href="index.html" class="active">Trang chủ</a>
@@ -31,6 +30,7 @@
 
             <div class="nav-actions">
                 <span id="walletAddress" class="wallet-address"></span>
+
                 <button id="connectWalletBtn" class="btn btn-primary">
                     Kết nối ví
                 </button>
@@ -46,6 +46,7 @@
         <!-- HERO -->
         <section class="hero">
             <div class="container hero-content">
+
                 <div class="hero-text">
                     <div class="hero-label">
                         <span class="status-dot"></span>
@@ -112,25 +113,27 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </section>
 
         <!-- STATISTICS -->
         <section class="statistics" id="about">
             <div class="container stats-grid">
+
                 <div class="stat-item">
                     <div class="stat-icon purple">▣</div>
                     <div>
-                        <h2 id="totalElections">03</h2>
-                        <p>Cuộc bình chọn</p>
+                        <h2 id="totalElections">Đang tải...</h2>
+                        <p>Cuộc bình chọn trên Blockchain</p>
                     </div>
                 </div>
 
                 <div class="stat-item">
                     <div class="stat-icon blue">◉</div>
                     <div>
-                        <h2 id="totalVotes">128</h2>
-                        <p>Lượt bỏ phiếu minh họa</p>
+                        <h2 id="totalVotes">Đang tải...</h2>
+                        <p>Tổng lượt bỏ phiếu</p>
                     </div>
                 </div>
 
@@ -141,12 +144,14 @@
                         <p>Công nghệ nền tảng</p>
                     </div>
                 </div>
+
             </div>
         </section>
 
         <!-- FEATURED ELECTIONS -->
         <section class="section">
             <div class="container">
+
                 <div class="section-heading">
                     <div>
                         <span class="section-label">BÌNH CHỌN NỔI BẬT</span>
@@ -160,14 +165,16 @@
                 </div>
 
                 <div class="election-grid" id="featuredElections">
-                    <!-- Dữ liệu được hiển thị bởi app.js -->
+                    <p>Đang tải cuộc bình chọn từ Blockchain...</p>
                 </div>
+
             </div>
         </section>
 
         <!-- FEATURES -->
         <section class="features-section">
             <div class="container">
+
                 <div class="section-heading centered">
                     <span class="section-label">TẠI SAO CHỌN VOTECHAIN?</span>
                     <h2>Bỏ phiếu theo cách minh bạch hơn</h2>
@@ -178,6 +185,7 @@
                 </div>
 
                 <div class="features-grid">
+
                     <article class="feature-card">
                         <div class="feature-icon purple">◇</div>
                         <h3>Minh bạch</h3>
@@ -204,6 +212,7 @@
                             trên Blockchain Explorer.
                         </p>
                     </article>
+
                 </div>
             </div>
         </section>
@@ -211,6 +220,7 @@
         <!-- CTA -->
         <section class="cta-section">
             <div class="container cta-content">
+
                 <div>
                     <h2>Sẵn sàng tham gia bình chọn?</h2>
                     <p>Kết nối ví và khám phá các cuộc bình chọn trên VoteChain.</p>
@@ -219,6 +229,7 @@
                 <a href="elections.html" class="btn btn-white">
                     Bắt đầu ngay →
                 </a>
+
             </div>
         </section>
 
@@ -227,18 +238,24 @@
     <!-- FOOTER -->
     <footer class="footer">
         <div class="container footer-content">
+
             <a href="index.html" class="logo">
                 <span class="logo-icon">V</span>
                 <span>Vote<span class="logo-highlight">Chain</span></span>
             </a>
 
             <p>© 2026 VoteChain. Blockchain-based Online Voting System.</p>
+
         </div>
     </footer>
 
     <div id="toast" class="toast"></div>
 
+    <!-- JAVASCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+    <script src="/js/contract.js"></script>
     <script src="js/wallet.js"></script>
     <script src="js/app.js"></script>
+
 </body>
 </html>
