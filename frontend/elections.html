@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuộc bầu cử | VoteChain</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+   
+<!-- HEADER -->
+<header class="election-header">
+
+    <a href="index.html" class="vc-brand">
+        <span class="vc-brand-icon">V</span>
+        <span class="vc-brand-name">
+            Vote<span>Chain</span>
+        </span>
+    </a>
+
+    <nav class="election-nav">
+        <a href="index.html">Trang chủ</a>
+        <a href="elections.html" class="active">Cuộc bầu cử</a>
+        <a href="create-election.html">Tạo cuộc bầu cử</a>
+        <a href="results.html">Kết quả</a>
+    </nav>
+
+    <div class="wallet-area">
+        <span id="walletAddress"></span>
+
+        <button class="wallet-button" id="connectWallet">
+            Kết nối ví
+        </button>
+    </div>
+
+</header>
+
+
+    <main class="election-container">
+
+        <!-- PAGE TITLE -->
+        <section class="election-hero">
+            <span class="section-label">VOTECHAIN PLATFORM</span>
+            <h1>Khám phá các cuộc bầu cử</h1>
+            <p>
+                Tham gia bỏ phiếu minh bạch và an toàn
+                trên nền tảng Blockchain.
+            </p>
+        </section>
+
+        <!-- STATISTICS -->
+        <section class="election-stats">
+            <div class="stat-box">
+                <span class="stat-icon">▣</span>
+                <div>
+                    <h3 id="totalElections">0</h3>
+                    <p>Tổng cuộc bầu cử</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-icon">◉</span>
+                <div>
+                    <h3 id="activeElections">0</h3>
+                    <p>Đang diễn ra</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-icon">✓</span>
+                <div>
+                    <h3 id="endedElections">0</h3>
+                    <p>Đã kết thúc</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTER -->
+        <section class="election-filter">
+            <div class="filter-heading">
+                <div>
+                    <h2>Tất cả cuộc bầu cử</h2>
+                    <p>Tìm kiếm và lựa chọn cuộc bầu cử bạn quan tâm.</p>
+                </div>
+            </div>
+
+            <div class="filter-controls">
+                <input
+                    type="text"
+                    id="searchElection"
+                    placeholder="Tìm kiếm cuộc bầu cử..."
+                >
+
+                <select id="statusFilter">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="active">Đang diễn ra</option>
+                    <option value="upcoming">Sắp diễn ra</option>
+                    <option value="ended">Đã kết thúc</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- ELECTION LIST -->
+        <section class="election-list" id="electionList">
+            <!-- JavaScript sẽ hiển thị dữ liệu ở đây -->
+        </section>
+
+        <div class="no-election" id="noElection" style="display: none;">
+            <div>🔎</div>
+            <h3>Không tìm thấy cuộc bầu cử</h3>
+            <p>Hãy thử tìm kiếm với từ khóa khác.</p>
+        </div>
+
+        <!-- CREATE CTA -->
+        <section class="election-cta">
+            <div>
+                <h2>Bạn muốn tổ chức một cuộc bầu cử?</h2>
+                <p>Tạo cuộc bầu cử của riêng bạn trên VoteChain.</p>
+            </div>
+
+            <a href="create-election.html" class="create-button">
+                + Tạo cuộc bầu cử
+            </a>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="election-footer">
+        <h3>◈ VoteChain</h3>
+        <p>Hệ thống bỏ phiếu trực tuyến ứng dụng Blockchain.</p>
+        <p>© 2026 VoteChain. All rights reserved.</p>
+    </footer>
+
+    <script src="js/wallet.js"></script>
+    <script src="js/elections.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bỏ phiếu | VoteChain</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="election-header">
+       
+<a href="index.html" class="vc-brand">
+    <span class="vc-brand-icon">V</span>
+    <span class="vc-brand-name">
+        Vote<span>Chain</span>
+    </span>
+</a>
+
+
+        <nav class="election-nav">
+            <a href="index.html">Trang chủ</a>
+            <a href="elections.html" class="active">Cuộc bầu cử</a>
+            <a href="create-election.html">Tạo cuộc bầu cử</a>
+            <a href="results.html">Kết quả</a>
+        </nav>
+
+        <button class="wallet-button" id="connectWallet">
+            Kết nối ví
+        </button>
+    </header>
+
+    <main class="vote-container">
+
+        <!-- BREADCRUMB -->
+        <div class="vote-breadcrumb">
+            <a href="elections.html">Cuộc bầu cử</a>
+            <span>/</span>
+            <span>Chi tiết và bỏ phiếu</span>
+        </div>
+
+        <!-- ELECTION INFORMATION -->
+        <section class="vote-heading">
+            <span class="vote-category">GIÁO DỤC</span>
+            <span class="status-badge status-active">Đang diễn ra</span>
+
+            <h1 id="electionTitle">
+                Bầu chọn Chủ tịch Hội sinh viên
+            </h1>
+
+            <p id="electionDescription">
+                Cuộc bầu chọn đại diện sinh viên nhiệm kỳ mới.
+                Hãy lựa chọn ứng viên mà bạn tin tưởng.
+            </p>
+        </section>
+
+        <!-- ELECTION INFORMATION CARDS -->
+        <section class="vote-info-grid">
+            <div class="vote-info-card">
+                <span>◷</span>
+                <div>
+                    <small>Thời gian kết thúc</small>
+                    <strong id="endDate">20/11/2026</strong>
+                </div>
+            </div>
+
+            <div class="vote-info-card">
+                <span>♙</span>
+                <div>
+                    <small>Số lượng ứng viên</small>
+                    <strong>4 ứng viên</strong>
+                </div>
+            </div>
+
+            <div class="vote-info-card">
+                <span>▣</span>
+                <div>
+                    <small>Tổng số phiếu</small>
+                    <strong id="totalVotes">128 phiếu</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- CANDIDATE SELECTION -->
+        <section class="candidate-section">
+            <div class="candidate-heading">
+                <div>
+                    <span class="section-label">YOUR CHOICE</span>
+                    <h2>Lựa chọn ứng viên</h2>
+                    <p>Chọn một ứng viên để tham gia bỏ phiếu.</p>
+                </div>
+
+                <span class="candidate-count">4 ứng viên</span>
+            </div>
+
+            <div class="candidate-grid" id="candidateList">
+
+                <!-- CANDIDATE 1 -->
+                <article class="candidate-card">
+                    <div class="candidate-avatar">BH</div>
+                    <h3>Bảo Hân</h3>
+                    <p class="candidate-position">Khoa Công nghệ thông tin</p>
+                    <p class="candidate-description">
+                        Đề xuất nhiều hoạt động học thuật và kết nối sinh viên.
+                    </p>
+
+                    <button class="select-candidate"
+                        data-candidate="1">
+                        Chọn ứng viên
+                    </button>
+                </article>
+
+                <!-- CANDIDATE 2 -->
+                <article class="candidate-card">
+                    <div class="candidate-avatar avatar-purple">TV</div>
+                    <h3>Tường Vy</h3>
+                    <p class="candidate-position">Khoa Kinh tế</p>
+                    <p class="candidate-description">
+                        Xây dựng môi trường sinh viên năng động và sáng tạo.
+                    </p>
+
+                    <button class="select-candidate"
+                        data-candidate="2">
+                        Chọn ứng viên
+                    </button>
+                </article>
+
+                <!-- CANDIDATE 3 -->
+                <article class="candidate-card">
+                    <div class="candidate-avatar avatar-green">PP</div>
+                    <h3>PondPhuwin</h3>
+                    <p class="candidate-position">Khoa Ngoại ngữ</p>
+                    <p class="candidate-description">
+                        Thúc đẩy giao lưu, hợp tác và các chương trình tình nguyện.
+                    </p>
+
+                    <button class="select-candidate"
+                        data-candidate="3">
+                        Chọn ứng viên
+                    </button>
+                </article>
+
+                <!-- CANDIDATE 4 -->
+                <article class="candidate-card">
+                    <div class="candidate-avatar avatar-orange">BP</div>
+                    <h3>BounPrem</h3>
+                    <p class="candidate-position">Khoa Kỹ thuật</p>
+                    <p class="candidate-description">
+                        Tăng cường hoạt động nghiên cứu và phát triển kỹ năng.
+                    </p>
+
+                    <button class="select-candidate"
+                        data-candidate="4">
+                        Chọn ứng viên
+                    </button>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- VOTING CONFIRMATION -->
+        <section class="voting-panel">
+            <div>
+                <span class="section-label">VOTING CONFIRMATION</span>
+                <h2>Xác nhận lựa chọn</h2>
+                <p id="selectedCandidate">
+                    Bạn chưa chọn ứng viên nào.
+                </p>
+            </div>
+
+            <button id="confirmVote" disabled>
+                Xác nhận bỏ phiếu →
+            </button>
+        </section>
+
+        <!-- BLOCKCHAIN NOTICE -->
+        <section class="blockchain-notice">
+            <span>🔒</span>
+            <div>
+                <strong>Bỏ phiếu trên Blockchain</strong>
+                <p>
+                    Khi tích hợp Smart Contract, giao dịch bỏ phiếu
+                    sẽ được gửi qua ví MetaMask và ghi nhận trên Blockchain.
+                    Mỗi địa chỉ ví chỉ được bỏ phiếu một lần cho mỗi cuộc bầu cử.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="election-footer">
+        <h3>◈ VoteChain</h3>
+        <p>Hệ thống bỏ phiếu trực tuyến ứng dụng Blockchain.</p>
+        <p>© 2026 VoteChain. All rights reserved.</p>
+    </footer>
+
+    <div id="voteToast" class="vote-toast"></div>
+
+    <script src="js/wallet.js"></script>
+    <script src="js/vote.js"></script>
+
+</body>
+</html>

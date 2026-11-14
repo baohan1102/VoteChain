@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo cuộc bình chọn | VoteChain</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/create-election.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="election-header">
+        <a href="index.html" class="vc-brand">
+            <span class="vc-brand-icon">V</span>
+            <span class="vc-brand-name">Vote<span>Chain</span></span>
+        </a>
+
+        <nav class="election-nav">
+            <a href="index.html">Trang chủ</a>
+            <a href="elections.html">Cuộc bầu cử</a>
+            <a href="create-election.html" class="active">Tạo cuộc bầu cử</a>
+            <a href="results.html">Kết quả</a>
+        </nav>
+
+        <div class="create-header-wallet">
+            <span id="walletAddress" class="wallet-address"></span>
+            <button class="wallet-button" id="connectWalletBtn"
+                    onclick="connectWallet()">
+                Kết nối ví
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="create-page">
+
+        <div class="create-breadcrumb">
+            <a href="index.html">Trang chủ</a>
+            <span>/</span>
+            <a href="elections.html">Cuộc bầu cử</a>
+            <span>/</span>
+            <strong>Tạo cuộc bầu cử</strong>
+        </div>
+
+        <section class="create-heading">
+            <span class="section-label">VOTECHAIN PLATFORM</span>
+            <h1>Tạo cuộc bình chọn mới</h1>
+            <p>
+                Khởi tạo một cuộc bình chọn minh bạch và an toàn
+                trên nền tảng Blockchain.
+            </p>
+        </section>
+
+        <div class="create-layout">
+
+            <!-- FORM -->
+            <section class="create-form-card">
+
+                <div class="form-section-heading">
+                    <div class="form-icon">✦</div>
+                    <div>
+                        <h2>Thông tin cuộc bình chọn</h2>
+                        <p>Điền đầy đủ thông tin cho cuộc bình chọn của bạn.</p>
+                    </div>
+                </div>
+
+                <form id="createElectionForm">
+
+                    <div class="form-group">
+                        <label for="pollTitle">
+                            Tên cuộc bình chọn <span>*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="pollTitle"
+                            placeholder="Ví dụ: Bầu chọn Chủ tịch Hội sinh viên"
+                            maxlength="150"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pollDescription">
+                            Mô tả cuộc bình chọn <span>*</span>
+                        </label>
+                        <textarea
+                            id="pollDescription"
+                            rows="4"
+                            placeholder="Nhập nội dung giới thiệu và mục đích của cuộc bình chọn..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-divider"></div>
+
+                    <!-- OPTIONS -->
+                    <div class="option-heading">
+                        <div>
+                            <h3>Các lựa chọn bình chọn</h3>
+                            <p>Thêm ít nhất 2 lựa chọn để người tham gia bình chọn.</p>
+                        </div>
+                        <span class="option-count" id="optionCount">2 lựa chọn</span>
+                    </div>
+
+                    <div id="optionList">
+
+                        <div class="option-input-row">
+                            <span class="option-number">01</span>
+                            <input
+                                type="text"
+                                class="poll-option"
+                                placeholder="Nhập lựa chọn thứ nhất"
+                                maxlength="100"
+                                required
+                            >
+                            <button type="button" class="remove-option"
+                                    disabled title="Không thể xóa">
+                                ×
+                            </button>
+                        </div>
+
+                        <div class="option-input-row">
+                            <span class="option-number">02</span>
+                            <input
+                                type="text"
+                                class="poll-option"
+                                placeholder="Nhập lựa chọn thứ hai"
+                                maxlength="100"
+                                required
+                            >
+                            <button type="button" class="remove-option"
+                                    disabled title="Không thể xóa">
+                                ×
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <button type="button" id="addOptionBtn" class="add-option-btn">
+                        <span>+</span> Thêm lựa chọn
+                    </button>
+
+                    <div class="form-divider"></div>
+
+                    <!-- TIME -->
+                    <div class="form-section-heading time-heading">
+                        <div class="form-icon">◷</div>
+                        <div>
+                            <h2>Thời gian bình chọn</h2>
+                            <p>Xác định thời điểm mở và đóng cuộc bình chọn.</p>
+                        </div>
+                    </div>
+
+                    <div class="time-grid">
+                        <div class="form-group">
+                            <label for="startTime">
+                                Thời gian bắt đầu <span>*</span>
+                            </label>
+                            <input type="datetime-local" id="startTime" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endTime">
+                                Thời gian kết thúc <span>*</span>
+                            </label>
+                            <input type="datetime-local" id="endTime" required>
+                        </div>
+                    </div>
+
+                    <div class="form-note">
+                        <span>ⓘ</span>
+                        <p>
+                            Cuộc bình chọn chỉ có thể diễn ra trong khoảng thời gian
+                            đã thiết lập. Người tham gia chỉ bỏ phiếu được khi cuộc
+                            bình chọn đang mở và đã được cấp quyền.
+                        </p>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="elections.html" class="cancel-create-btn">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="submit-create-btn" id="submitPollBtn">
+                            Tạo cuộc bình chọn <span>→</span>
+                        </button>
+                    </div>
+
+                </form>
+            </section>
+
+            <!-- SIDE INFORMATION -->
+            <aside class="create-sidebar">
+
+                <div class="preview-card">
+                    <span class="preview-label">PREVIEW</span>
+                    <div class="preview-icon">◈</div>
+                    <h3 id="previewTitle">Tên cuộc bình chọn</h3>
+                    <p id="previewDescription">
+                        Mô tả cuộc bình chọn sẽ xuất hiện ở đây.
+                    </p>
+
+                    <div class="preview-divider"></div>
+
+                    <div class="preview-meta">
+                        <span>Số lựa chọn</span>
+                        <strong id="previewOptionCount">2</strong>
+                    </div>
+                    <div class="preview-meta">
+                        <span>Trạng thái</span>
+                        <strong class="preview-status">Chưa tạo</strong>
+                    </div>
+                </div>
+
+                <div class="create-info-card">
+                    <h3>Quy trình hoạt động</h3>
+
+                    <div class="process-item">
+                        <span>01</span>
+                        <div>
+                            <strong>Tạo cuộc bình chọn</strong>
+                            <p>Nhập thông tin và các lựa chọn.</p>
+                        </div>
+                    </div>
+
+                    <div class="process-item">
+                        <span>02</span>
+                        <div>
+                            <strong>Cấp quyền cử tri</strong>
+                            <p>Người tạo thêm địa chỉ ví được phép bỏ phiếu.</p>
+                        </div>
+                    </div>
+
+                    <div class="process-item">
+                        <span>03</span>
+                        <div>
+                            <strong>Bắt đầu bình chọn</strong>
+                            <p>Cử tri đủ điều kiện kết nối ví và bỏ phiếu.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-note">
+                    <span>♧</span>
+                    <div>
+                        <strong>Minh bạch trên Blockchain</strong>
+                        <p>
+                            Giao dịch tạo cuộc bình chọn sẽ được ghi nhận
+                            trên mạng Blockchain sau khi tích hợp Smart Contract.
+                        </p>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- TOAST -->
+    <div class="create-toast" id="createToast"></div>
+
+    <!-- FOOTER -->
+    <footer class="election-footer">
+        <h3>VoteChain</h3>
+        <p>Nền tảng bình chọn trực tuyến ứng dụng Blockchain.</p>
+        <p>© 2026 VoteChain. All rights reserved.</p>
+    </footer>
+
+    <script src="js/wallet.js"></script>
+    <script src="js/create-election.js"></script>
+</body>
+</html>
