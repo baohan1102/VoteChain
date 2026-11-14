@@ -147,3 +147,25 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Hardhat generated files
+artifacts/
+cache/
+types/
+coverage/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Hardhat keystore
+.keystore/
