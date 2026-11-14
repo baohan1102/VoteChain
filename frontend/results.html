@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả bình chọn | VoteChain</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/results.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="election-header">
+
+        <!-- LOGO -->
+        <a href="index.html" class="vc-brand">
+            <span class="vc-brand-icon">V</span>
+            <span class="vc-brand-name">
+                Vote<span>Chain</span>
+            </span>
+        </a>
+
+        <!-- MENU -->
+        <nav class="election-nav">
+            <a href="index.html">Trang chủ</a>
+            <a href="elections.html">Cuộc bầu cử</a>
+            <a href="create-election.html">Tạo cuộc bầu cử</a>
+            <a href="results.html" class="active">Kết quả</a>
+        </nav>
+
+        <!-- WALLET -->
+        <div class="nav-actions">
+            <span class="wallet-address" id="walletAddress"></span>
+
+            <button
+                id="connectWalletBtn"
+                class="wallet-button"
+                onclick="connectWallet()">
+                Kết nối ví
+            </button>
+        </div>
+
+    </header>
+
+
+    <!-- MAIN -->
+    <main class="results-page">
+
+        <!-- PAGE HEADING -->
+        <div class="results-heading">
+            <div>
+                <span class="results-label">VOTECHAIN RESULTS</span>
+                <h1>Kết quả bình chọn</h1>
+                <p>Theo dõi kết quả và tỷ lệ phiếu bầu của các cuộc bầu cử.</p>
+            </div>
+
+            <a href="elections.html" class="back-link">
+                ← Danh sách cuộc bầu cử
+            </a>
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- RESULTS ELECTION LIST -->
+        <!-- ================================= -->
+
+        <section id="resultsListSection" class="results-list-section">
+
+            <div class="results-list-heading">
+                <div>
+                    <h2>Các cuộc bầu cử</h2>
+                    <p>
+                        Chọn một cuộc bầu cử để xem kết quả bình chọn chi tiết.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Danh sách được tạo bằng JavaScript -->
+            <div
+                id="resultsElectionList"
+                class="results-election-list">
+            </div>
+
+            <!-- Khi chưa có kết quả -->
+            <div
+                id="noResultsElection"
+                class="no-results-election"
+                hidden>
+
+                <div class="empty-icon">📊</div>
+
+                <h3>Chưa có kết quả bình chọn</h3>
+
+                <p>
+                    Hiện chưa có cuộc bầu cử nào ghi nhận phiếu bình chọn.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- RESULT DETAIL PAGE -->
+        <!-- ================================= -->
+
+        <div id="resultDetailPage" hidden>
+
+            <!-- ELECTION INFORMATION -->
+            <section class="results-election-card">
+
+                <div class="election-card-top">
+
+                    <span class="result-status" id="resultStatus">
+                        Đã kết thúc
+                    </span>
+
+                    <span class="election-id" id="electionId">
+                        Mã cuộc bầu cử
+                    </span>
+
+                </div>
+
+                <h2 id="electionTitle">
+                    Đang tải cuộc bầu cử...
+                </h2>
+
+                <p id="electionDescription">
+                    Thông tin cuộc bầu cử
+                </p>
+
+                <div class="election-meta">
+
+                    <div>
+                        <span>Thời gian kết thúc</span>
+                        <strong id="electionEndDate">--</strong>
+                    </div>
+
+                    <div>
+                        <span>Người tạo</span>
+                        <strong id="electionCreator">--</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- STATISTICS -->
+            <section class="result-statistics">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">☑</div>
+
+                    <div>
+                        <span>Tổng số phiếu</span>
+                        <h3 id="totalVotes">0</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">♙</div>
+
+                    <div>
+                        <span>Số lựa chọn</span>
+                        <h3 id="totalOptions">0</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">★</div>
+
+                    <div>
+                        <span>Lựa chọn dẫn đầu</span>
+                        <h3 id="leadingOption">--</h3>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RESULTS CHART -->
+            <section class="results-content">
+
+                <!-- CHART -->
+                <div class="results-chart-card">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <h2>Thống kê phiếu bầu</h2>
+                            <p>
+                                Tỷ lệ phiếu bầu của từng lựa chọn
+                            </p>
+                        </div>
+
+                        <button
+                            id="refreshResults"
+                            class="refresh-btn">
+                            ↻ Làm mới
+                        </button>
+
+                    </div>
+
+                    <!-- Biểu đồ -->
+                    <div
+                        id="chartContainer"
+                        class="chart-container">
+                    </div>
+
+                    <!-- Chưa có phiếu -->
+                    <div
+                        id="emptyResults"
+                        class="empty-results"
+                        hidden>
+
+                        <div class="empty-icon">📊</div>
+
+                        <h3>Chưa có kết quả</h3>
+
+                        <p>
+                            Cuộc bầu cử hiện chưa ghi nhận phiếu bình chọn nào.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESULT DETAILS -->
+                <div class="results-detail-card">
+
+                    <h2>Chi tiết kết quả</h2>
+
+                    <p class="detail-description">
+                        Số lượng phiếu của từng lựa chọn
+                    </p>
+
+                    <div id="resultDetailList">
+                        <!-- JavaScript hiển thị chi tiết -->
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- BLOCKCHAIN NOTICE -->
+            <section class="blockchain-notice">
+
+                <div class="blockchain-icon">♧</div>
+
+                <div>
+
+                    <h3>Kết quả minh bạch trên Blockchain</h3>
+
+                    <p>
+                        Kết quả bình chọn được lưu trữ trên Blockchain.
+                        Khi tích hợp Smart Contract, dữ liệu sẽ được truy xuất
+                        trực tiếp từ mạng Sepolia.
+                    </p>
+
+                    <span id="dataSource">
+                        Dữ liệu hiện tại: Bản demo giao diện
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- ACTIONS -->
+            <div class="results-actions">
+
+                <a href="results.html" class="secondary-btn">
+                    ← Danh sách kết quả
+                </a>
+
+                <a href="index.html" class="primary-btn">
+                    Về trang chủ →
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="results-footer">
+        <p>
+            © 2026 VoteChain. Blockchain-based Online Voting System.
+        </p>
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="js/wallet.js"></script>
+    <script src="js/results.js"></script>
+
+</body>
+</html>
